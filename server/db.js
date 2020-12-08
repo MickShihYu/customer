@@ -2,59 +2,63 @@ require('dotenv').config({});
 const { ETIMEDOUT } = require('constants');
 const { MongoClient, ObjectID } = require('mongodb');
 
-class MongoDB{
+const connect = async function(name, host, port){
+    const connectData = {
+        serviceName: name,
+        db_host:"mongodb://"+host+":"+port
+    };
 
-    constructor(name, host, port){
-        this.serviceName = name;
-        this.db_host = "mongodb://"+host+":"+port;
-        this.client = new MongoClient(this.db_host, { useUnifiedTopology: true });
+    connectData.init = async function(){
+        console.log("------- db:" + this.serviceName + " init -------------");
+        connectData.client = new MongoClient(this.db_host, { useUnifiedTopology: true });
+        await connectData.start();
     }
 
-    getName(){
+    connectData.getName = function(){
         return this.serviceName;
-    }
+    };
 
-    start(){
+    connectData.start = async function(){
         if(this.client!=null)
         {
             this.client.connect();
             this.db = this.client.db(this.serviceName);
         }
-    }
+    };
 
-    isConnect(){
+    connectData.isConnect = function(){
         return this.client.isConnected();
     }
 
-    getComposeDataSetName(uuid, suid){
+    connectData.getComposeDataSetName = function(uuid, suid){
         let dataset = uuid;
         if(suid!=null && suid.length>0) dataset+="_"+suid;
         return dataset;
-    }
+    };
 
-    getCollectionNames(cb){
+    connectData.getCollectionNames = function(cb){
         const collections = [];
         this.db.listCollections().toArray((err, collInfos)=>{
             if(err) return cb(err);
             collInfos.forEach((doc) => { collections.push(doc.name) });
             cb(collections);
         });
-    }  
+    }; 
 
-    getCollection(collectionName, cb){
+    connectData.getCollection = function(collectionName, cb){
         this.db.collection(collectionName, function(err,collection){
             if(err) return cb(err);
             cb(null, collection);
         });
-    }
+    };
 
-    deleteCollection(uuid, suid, cb){
+    connectData.deleteCollection = function(uuid, suid, cb){
         this.db.collection(this.getComposeDataSetName(uuid, suid)).drop( (err)=>{
             return cb(err);
         });
-    }
+    };
 
-    createCollection(uuid, suid, cb){
+    connectData.createCollection = function(uuid, suid, cb){
         this.getCollectionNames(this.getComposeDataSetName(uuid, suid), (err, collection)=>{
             if(err) return cb(err);
             if(collection)
@@ -64,9 +68,9 @@ class MongoDB{
                 });
             }
         });
-    }
+    };
 
-    addData(uuid, suid, ukey, value, timestamp, cb)
+    connectData.addData = function(uuid, suid, ukey, value, timestamp, cb)
     {
         this.getCollection(this.getComposeDataSetName(uuid, suid), (err, collection)=>{
             if(err) return cb(err);
@@ -79,23 +83,23 @@ class MongoDB{
                 this.insertData(doc, collection, cb);
             }
         });
-    }
+    };
 
-    insertData(doc, collection, cb)
+    connectData.insertData = function(doc, collection, cb)
     {
         collection.insertOne(doc, (err)=>{
             if (err) return this.updateData(doc, collection, cb);
         });
-    }
+    };
 
-    updateData(doc, collection, cb)
+    connectData.updateData = function(doc, collection, cb)
     {
         collection.replaceOne({_id:doc._id}, doc, {w:1}, (err)=>{
             if (err) return cb(err);
         });  
-    }
+    };
 
-    removeData(uuid, suid, ukey, cb)
+    connectData.removeData = function(uuid, suid, ukey, cb)
     {
         this.getCollection(this.getComposeDataSetName(uuid, suid), (err, collection)=>{
             if(err) return cb(err);
@@ -107,9 +111,9 @@ class MongoDB{
                 });
             }
         });
-    }
+    };
 
-    getDataByKey(uuid, suid, ukey, cb){
+    connectData.getDataByKey = function(uuid, suid, ukey, cb){
         this.getCollection(this.getComposeDataSetName(uuid, suid), (err, collection)=>{
             if(err) return cb(err);
             if(collection!=null)
@@ -120,9 +124,9 @@ class MongoDB{
                 });
             }
         });
-    }
+    };
 
-    getDataByDate(uuid, suid, start_time, end_time, cb){
+    connectData.getDataByDate = function(uuid, suid, start_time, end_time, cb){
         this.getCollection(this.getComposeDataSetName(uuid, suid), (err, collection)=>{
             if(err) return cb(err);
             if(collection!=null)
@@ -141,10 +145,10 @@ class MongoDB{
                 });
             }
         });
-    }
-}
+    };
 
-var mongoClient = new MongoDB(process.env.DEVICE_DB_NAME, 'localhost', process.env.MONGO_PORT);
-mongoClient.start();
+    await connectData.init();
+    return connectData;
+};
 
-module.exports = mongoClient;
+module.exports = connect;

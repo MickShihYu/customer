@@ -1,9 +1,11 @@
 'use strict';
 
 const { convert2nimn } = require('fast-xml-parser');
-const MongoDB = require('../../db');
+const db = require('../../server/db');
 
-module.exports = function(Device) {
+module.exports = async function(Device) {
+
+    const MongoDB = await db(process.env.DEVICE_DB_NAME, 'localhost', process.env.MONGO_PORT);
 
     Device.insert = function(data, cb){
         Device.find({where:{mac_id:data.mac_id}}, function(err, device){
@@ -38,10 +40,10 @@ module.exports = function(Device) {
     Device.getConfigurationData = function(data, cb){
 
         Device.find({where:{mac_id:data.mac_id}}, function(err, device){
-            if(err) return cb(null, err);
+            if(err) return cb(err, null);
             if(device.length>0){
                 MongoDB.getDataByKey("device", "cfg", device[0].mac_id+"_cfg", (err, data)=>{
-                    if(err) cb(err);
+                    if(err) return cb(err);
                     cb(null, data);
                 });
             }else{
@@ -60,11 +62,11 @@ module.exports = function(Device) {
     );
 
     Device.getDataByDate = function(data, cb){
-        if(data==null) cb(new Error("data is empty!"));
-        if(data.company==null || data.mac_id==null || data.start_time==null || data.end_time==null) cb(new Error("data parameter is empty!"));
+        if(data==null) return cb(new Error("data is empty!"));
+        if(data.company==null || data.mac_id==null || data.start_time==null || data.end_time==null)  return cb(new Error("data parameter is empty!"));
 
         MongoDB.getDataByDate(data.company, data.mac_id + "_info", data.start_time, data.end_time, cb, (err, data)=>{
-            if(err) cb(err);
+            if(err) return cb(err);
             cb(null, data)
         });
     };

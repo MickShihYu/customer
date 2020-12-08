@@ -11,13 +11,8 @@ const PassportConfigurator = loopbackPassport.PassportConfigurator;
 const passportConfigurator = new PassportConfigurator(app);
 const bodyParser = require('body-parser');
 const flash      = require('express-flash');
-const MongoDB = require('../db');
-
-//const deviceInfoListenerModel = require('../listeners/deviceInfoListener');
-//const deviceInfoListener = new deviceInfoListenerModel(app);
 
 let config = {};
-
 
 try {
   config = require('../providers.json');
