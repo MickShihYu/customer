@@ -3,28 +3,30 @@ module.exports = function(app){
     var Device = app.models.Device;
 
     //login('0004ed555555');
-    //create('2', '0004ed555554');
+    create('1', 'default', ['0004ed555554','0004ed555555', '0004ed555556']);
+    //create('2', ['1004ed555554','1004ed555555', '1004ed555556']);
 
-    function create(number, mac_id){        
-
+    function create(number, company_name, mac_list){        
         const payload = {
             username: number, 
             email: number+'@'+number, 
             password: number
         }
 
-        User.create([
-            payload
-        ], function(err, users) {
-            if (err) throw err;
-            Device.insert({
-                mac_id: mac_id,
-                ownerId: users[0].id,
-                system_time: new Date()
-
-            }, function(err, project) {
-                if (err) throw err;
-                console.log('Create project:', project);
+        User.create([payload]
+        , function(err, users) {
+            if (err){console.log(err);return;} 
+            
+            mac_list.forEach(mac => {
+                Device.insert({
+                    company: company_name,
+                    mac_id: mac,
+                    ownerId: users[0].id,
+                    system_time: new Date()
+                }, function(err, project) {
+                    if (err){console.log(err);return;} 
+                    console.log('Create project:', project);
+                }); 
             });
         });    
     }

@@ -10,6 +10,10 @@
       "type": "string",
       "required": true
     },
+    "company": {
+      "type": "string",
+      "required": true
+    },
     "system_time": {
       "type": "date",
       "required": true
@@ -17,7 +21,7 @@
   },
   "validations": [],
   "relations": {
-    "user": {
+  "user": {
       "type": "belongsTo",
       "model": "user",
       "foreignKey": "ownerId"
@@ -45,11 +49,25 @@
       "property": "findById"
     },
     {
-      "accessType": "EXECUTE",
+      "accessType": "READ",
       "principalType": "ROLE",
       "principalId": "$authenticated",
       "permission": "ALLOW",
+      "property": "listDevices"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
       "property": "getConfigurationData"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "getDataByDate"
     }
   ],
   "methods": {}
