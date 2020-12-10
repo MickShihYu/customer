@@ -20,6 +20,7 @@ const mqttCallback = function(topic, message) {
                 case "device_info":
                 case "device_cmd":
                 case "reply":
+                case "device_alert":
                 { 
                     try {
                         const value = JSON.parse(message);
@@ -58,10 +59,9 @@ function xmlToJson(data)
     } 
 }
 
-
 const clientList = [];
 clientList.push(new MqttClient('device1', [process.env.MQTT_TOPIC_INFO], mqttCallback));
 clientList.push(new MqttClient('device2', [process.env.MQTT_TOPIC_CFG], mqttCallback));
-clientList.push(new MqttClient('device3', [process.env.MQTT_TOPIC_CMD, process.env.MQTT_TOPIC_REPLY], mqttCallback));
+clientList.push(new MqttClient('device3', [process.env.MQTT_TOPIC_CMD, process.env.MQTT_TOPIC_REPLY, process.env.MQTT_TOPIC_ALERT], mqttCallback));
 
 console.log("alive:" + clientList[0].isAlive);

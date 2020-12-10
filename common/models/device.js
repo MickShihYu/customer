@@ -38,11 +38,11 @@ module.exports = async function(Device) {
     );
 
     Device.getConfigurationData = function(data, cb){
-
-        Device.find({where:{mac_id:data.mac_id}}, function(err, device){
+        //Device.find({where:{mac_id:data.mac_id}}, function(err, device){
+        Device.findById(data.id, function(err, device){
             if(err) return cb(err, null);
             if(device.length>0){
-                MongoDB.getDataByKey("device", "cfg", device[0].mac_id+"_cfg", (err, data)=>{
+                MongoDB.getDataByKey("device", "cfg", device.mac_id+"_cfg", (err, data)=>{
                     if(err) return cb(err);
                     cb(null, data);
                 });

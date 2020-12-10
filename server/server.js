@@ -45,6 +45,7 @@ passportConfigurator.setupModels({
   userIdentityModel: app.models.userIdentity,
   userCredentialModel: app.models.userCredential,
 });
+
 for (var s in config) {
   var c = config[s];
   c.session = c.session !== false;

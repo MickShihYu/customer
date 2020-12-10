@@ -3,14 +3,22 @@ module.exports = function(app){
     var Device = app.models.Device;
 
     //login('0004ed555555');
+    //create('2', '0004ed555554');
 
-    function create(){        
+    function create(number, mac_id){        
+
+        const payload = {
+            username: number, 
+            email: number+'@'+number, 
+            password: number
+        }
+
         User.create([
-            {username: '1', email: '1@1', password: '1'}
+            payload
         ], function(err, users) {
             if (err) throw err;
             Device.insert({
-                mac_id: 'MAC123450004ed55555567',
+                mac_id: mac_id,
                 ownerId: users[0].id,
                 system_time: new Date()
 

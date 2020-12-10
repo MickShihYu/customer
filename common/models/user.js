@@ -1,8 +1,7 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY || null;
-
-module.exports = function(User) {
+module.exports = async function(User) {
 
   // User.prototype.createAccessToken = function(ttl, cb) {
   //   const userSettings = this.constructor.settings;
