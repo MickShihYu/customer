@@ -1,0 +1,26 @@
+{
+  "name": "device_cfg",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "data": {
+      "type": "object"
+    },
+    "system_time": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "device": {
+      "type": "belongsTo",
+      "model": "device",
+      "foreignKey": "id"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

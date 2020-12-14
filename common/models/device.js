@@ -1,12 +1,11 @@
 'use strict';
 const { convert2nimn } = require('fast-xml-parser');
 const db = require('../../server/db');
-
+const app = require('../../server/server');
 module.exports = async function(Device) {
 
-    const MongoDB = await db(process.env.DEVICE_DB_NAME, 'localhost', process.env.MONGO_PORT);
-    //var User = app.models.user;
-
+    //const MongoDB = await db(process.env.DEVICE_DB_NAME, 'localhost', process.env.MONGO_PORT);
+    
     Device.listDevices = function(id, cb) {
         Device.find({where:{ownerId: id}}, cb);
     };
@@ -52,10 +51,10 @@ module.exports = async function(Device) {
     Device.getConfigurationData = function(id, cb){
         Device.findById(id, function(err, device){
             if(err) return cb(err, null);
-            MongoDB.getDataByKey("device", "cfg", device.mac_id+"_cfg", (err, data)=>{
-                if(err) return cb(err);
-                cb(null, data);
-            });
+            // MongoDB.getDataByKey("device", "cfg", device.mac_id+"_cfg", (err, data)=>{
+            //     if(err) return cb(err);
+            //     cb(null, data);
+            // });
         });
     };
 
@@ -71,10 +70,10 @@ module.exports = async function(Device) {
     Device.getDataByDate = function(id, start_time, end_time, cb){
         Device.findById(id, function(err, device){
             if(err) return cb(err, null);
-            MongoDB.getDataByDate(device.company, device.mac_id + "_info", start_time, end_time, (err, data)=>{
-                if(err) return cb(err);
-                cb(null, data)
-            });
+            // MongoDB.getDataByDate(device.company, device.mac_id + "_info", start_time, end_time, (err, data)=>{
+            //     if(err) return cb(err);
+            //     cb(null, data)
+            // });
         });
     };
 

@@ -41,5 +41,13 @@
   "device": {
     "dataSource": "customerDB",
     "public": true
+  },
+  "device_cfg": {
+    "dataSource": "customerDB",
+    "public": true
+  },
+  "device_commands": {
+    "dataSource": "customerDB",
+    "public": true
   }
 }

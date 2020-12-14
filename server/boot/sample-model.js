@@ -3,7 +3,7 @@ module.exports = function(app){
     var Device = app.models.Device;
 
     //login('0004ed555555');
-    create('1', 'default', ['0004ed555554','0004ed555555', '0004ed555556']);
+    //create('1', 'default', ['0004ed555554','0004ed555555', '0004ed555556']);
     //create('2', ['1004ed555554','1004ed555555', '1004ed555556']);
 
     function create(number, company_name, mac_list){        
