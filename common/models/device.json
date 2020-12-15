@@ -30,6 +30,11 @@
       "type": "hasOne",
       "model": "device_cfg",
       "foreignKey": "id"
+    },    
+    "device_commands": {
+      "type": "hasMany",
+      "model": "device_commands",
+      "foreignKey": "mac_id"
     }
   },
   "acls": [

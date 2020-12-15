@@ -76,10 +76,12 @@ const connect = async function(name, host, port){
             if(err) return cb(err);
             if(collection!=null)
             {
-                const doc = {};
+                const doc = value;
                 doc._id = (ukey!=null&&ukey.length>0?ukey:new ObjectID());
+                doc.uuid = uuid;
+                doc.suid = suid;
                 doc.system_time = timestamp;
-                doc.data = value;
+
                 this.insertData(doc, collection, cb);
             }
         });

@@ -10,12 +10,14 @@ const DEVICE_NAME = 'device';
 
 const mqttCallback = function(topic, message) {
     try {
-        const topics = topic.toLowerCase().split("/");
+        const topics = topic.split("/");
         if(topics.length>0)
         {
-            const macId = topics[1];
-            const cmd  = (topics[2]=="ctl"?topics[3]:topics[2]);
+            const macId = topics[1].toUpperCase();
+            const cmd  = (topics[2]=="CTL"?topics[3]:topics[2]);
             let suid = (cmd=="reply"?cmd:cmd.split("_")[1]);
+
+            console.log("topic: " + topic + " cmd:" + cmd);
 
             switch(cmd)
             {
@@ -29,8 +31,15 @@ const mqttCallback = function(topic, message) {
                     }else if(suid=="cfg"){
                         value = xmlToJson(message);
                     } 
-                    if(suid!=null)
-                        MongoDB.addData(DEVICE_NAME, suid, macId,  value, new Date(), (err)=>{});
+
+                    const payload = {
+                        "mac_id": macId,
+                        "from": topics[0],
+                        "data": value
+                    };
+
+                    if(value!=null)
+                        MongoDB.addData(DEVICE_NAME, suid, macId,  payload, new Date(), (err)=>{});
                 }
                 break;
                 case "device_cmd":
@@ -38,9 +47,14 @@ const mqttCallback = function(topic, message) {
                 case "device_alert":
                 { 
                     const value = JSON.parse(message);
-                    value.topic = cmd;
-                    MongoDB.addData(DEVICE_NAME, "commands", "", value, new Date(), (err)=>{});
-                    console.log("topic: " + topic + " cmd:" + cmd);
+                    const payload = {
+                        "mac_id": macId,
+                        "from": topics[0],
+                        "topic": cmd,
+                        "data": value
+                    };
+
+                    MongoDB.addData(DEVICE_NAME, "commands", "", payload, new Date(), (err)=>{});
                 }
                 break;
                 default:
@@ -52,6 +66,7 @@ const mqttCallback = function(topic, message) {
         console.error(error);
     }
 };
+
 
 function xmlToJson(data)
 {
