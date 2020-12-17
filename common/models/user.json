@@ -20,9 +20,9 @@
       "model": "userCredential",
       "foreignKey": "userId"
     },
-    "device": {
+    "projects": {
       "type": "hasMany",
-      "model": "device",
+      "model": "project",
       "foreignKey": "ownerId"
     }
   },

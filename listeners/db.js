@@ -1,6 +1,6 @@
-require('dotenv').config({});
 const { ETIMEDOUT } = require('constants');
 const { MongoClient, ObjectID } = require('mongodb');
+const async = require('async');
 
 const connect = async function(name, host, port){
     const connectData = {
@@ -80,8 +80,9 @@ const connect = async function(name, host, port){
                 doc._id = (ukey!=null&&ukey.length>0?ukey:new ObjectID());
                 doc.uuid = uuid;
                 doc.suid = suid;
+                doc.ukey = ukey;
                 doc.system_time = timestamp;
-
+                
                 this.insertData(doc, collection, cb);
             }
         });
@@ -89,8 +90,14 @@ const connect = async function(name, host, port){
 
     connectData.insertData = function(doc, collection, cb)
     {
+        //console.log("insert one: " + doc.uuid + "-" + doc.suid + "-" + doc.ukey);
         collection.insertOne(doc, (err)=>{
-            if (err) return this.updateData(doc, collection, cb);
+            if (err) {
+                collection.updateOne({_id:doc.ukey},{"$set" : { "values" : doc.values}}, {upsert: true}, (err)=>{
+                    if(err) return cb(err);
+                    //console.log("update one: " + doc.uuid + "-" + doc.suid + "-" + doc.ukey);
+                });
+            } 
         });
     };
 
@@ -121,6 +128,7 @@ const connect = async function(name, host, port){
             if(collection!=null)
             {
                 collection.findOne({_id: ukey}, function(err, data) {
+                    console.log("get key: " + uuid + "-" + suid + "-" + ukey);
                     if(err) return cb(err);
                     cb(null, data)
                 });

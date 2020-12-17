@@ -10,27 +10,26 @@
       "type": "string",
       "required": true
     },
-    "company": {
-      "type": "string",
-      "required": true
-    },
     "system_time": {
       "type": "date",
       "required": true
+    },
+    "from": {
+      "type": "string"
     }
   },
   "validations": [],
   "relations": {
-    "user": {
+    "project": {
       "type": "belongsTo",
-      "model": "user",
-      "foreignKey": "ownerId"
-    },    
+      "model": "project",
+      "foreignKey": "mac_id"
+    },
     "device_cfg": {
       "type": "hasOne",
       "model": "device_cfg",
-      "foreignKey": "id"
-    },    
+      "foreignKey": "mac_id"
+    },
     "device_commands": {
       "type": "hasMany",
       "model": "device_commands",
@@ -38,7 +37,6 @@
     }
   },
   "acls": [
-   
   ],
   "methods": {}
 }

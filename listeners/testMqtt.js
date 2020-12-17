@@ -1,6 +1,8 @@
-require('dotenv').config({});
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
+
 const MqttClient = require('./mqttClient');
-const db = require('../server/db');
+const db = require('./db');
 const fs = require('fs');
 const parser = require("fast-xml-parser");
 const { RuleTester } = require('eslint');
@@ -16,8 +18,6 @@ const mqttCallback = function(topic, message) {
             const macId = topics[1].toUpperCase();
             const cmd  = (topics[2]=="CTL"?topics[3]:topics[2]);
             let suid = (cmd=="reply"?cmd:cmd.split("_")[1]);
-
-            console.log("topic: " + topic + " cmd:" + cmd);
 
             switch(cmd)
             {
@@ -35,11 +35,14 @@ const mqttCallback = function(topic, message) {
                     const payload = {
                         "mac_id": macId,
                         "from": topics[0],
-                        "data": value
+                        "values": value
                     };
 
                     if(value!=null)
+                    {
+                        console.log("topic: " + topic + " cmd:" + cmd);
                         MongoDB.addData(DEVICE_NAME, suid, macId,  payload, new Date(), (err)=>{});
+                    }
                 }
                 break;
                 case "device_cmd":
@@ -51,7 +54,7 @@ const mqttCallback = function(topic, message) {
                         "mac_id": macId,
                         "from": topics[0],
                         "topic": cmd,
-                        "data": value
+                        "values": value
                     };
 
                     MongoDB.addData(DEVICE_NAME, "commands", "", payload, new Date(), (err)=>{});

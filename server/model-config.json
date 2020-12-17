@@ -11,7 +11,7 @@
     "public": false
   },
   "user": {
-    "dataSource": "customerDB",
+    "dataSource": "db",
     "public": true
   },
   "accessToken": {
@@ -19,11 +19,11 @@
     "public": false
   },
   "userCredential": {
-    "dataSource": "customerDB",
+    "dataSource": "db",
     "public": false
   },
   "userIdentity": {
-    "dataSource": "customerDB",
+    "dataSource": "db",
     "public": false
   },
   "ACL": {
@@ -47,6 +47,10 @@
     "public": true
   },
   "device_commands": {
+    "dataSource": "customerDB",
+    "public": true
+  },
+  "project": {
     "dataSource": "customerDB",
     "public": true
   }
