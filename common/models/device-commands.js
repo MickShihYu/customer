@@ -44,7 +44,7 @@ module.exports = function(Devicecommands) {
                 {arg: 'end_time', type: 'String'}
             ],
             returns: {arg: 'data', type: 'String'},
-            http: {path:'/getDeviceInfoByTime', verb: 'post'}
+            http: {path:'/getDeviceCommandsByTime', verb: 'post'}
         }
     );
 };

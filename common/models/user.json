@@ -20,7 +20,7 @@
       "model": "userCredential",
       "foreignKey": "userId"
     },
-    "projects": {
+    "project": {
       "type": "hasMany",
       "model": "project",
       "foreignKey": "ownerId"

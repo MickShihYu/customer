@@ -11,6 +11,26 @@ module.exports = async function(User) {
   //   return cb ? cb(null, payload) : {id: accessToken};
   // };
 
+  User.afterRemote('create', function(context, userInstance, next) {
+    console.log('> user.afterRemote triggered');
+
+    var verifyOptions = {
+      type: 'email',
+      to: userInstance.email,
+      from: 'mick.shih.yu.test@gmail.com',
+      subject: 'Thanks for registering.',
+      redirect: '/verified',
+      user: userInstance
+    };
+
+    userInstance.verify(verifyOptions, function(err, response, next) {
+      if (err) return next(err);
+
+      console.log('> verification email sent:', response);
+
+    });
+  });
+
   User.afterRemote('prototype.verify', function(context, user, next) {
     context.res.render('response', {
       title: 'A Link to reverify your identity has been sent to your email successfully',

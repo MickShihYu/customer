@@ -24,6 +24,8 @@
       "foreignKey": "projectId"
     }
   },
-  "acls": [],
+  "acls": [
+
+  ],
   "methods": {}
 }
