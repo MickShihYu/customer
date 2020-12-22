@@ -20,10 +20,10 @@
   },
   "validations": [],
   "relations": {
-    "project": {
+    "user": {
       "type": "belongsTo",
-      "model": "project",
-      "foreignKey": "projectId"
+      "model": "user",
+      "foreignKey": "ownerId"
     },
     "device_cfg": {
       "type": "hasOne",
@@ -36,27 +36,6 @@
       "foreignKey": "mac_id"
     }
   },
-  "acls": [
-    {
-      "accessType": "*",
-      "principalType": "ROLE",
-      "principalId": "$everyone",
-      "permission": "DENY"
-    },
-    {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "find"
-    },
-    {
-      "accessType": "READ",
-      "principalType": "ROLE",
-      "principalId": "$owner",
-      "permission": "ALLOW",
-      "property": "findById"
-    }
-  ],
+  "acls": [],
   "methods": {}
 }

@@ -17,48 +17,17 @@ module.exports = function(app){
 
         User.create(payload, function(err, user) {
             if (err){console.log(err);return;} 
-
-            const projectPayload = {
-                name: company,
-                ownerId: user.id
-            }
-
-            Project.create(projectPayload , function(err, project) {
-                if (err){console.log(err);return;} 
-
-                changeProjectID(mac_list, project.id);   
-             }); 
+            changeProjectID(mac_list, user.id);   
         });    
     }
 
-    function changeProjectID(mac_list, projectId){
+    function changeProjectID(mac_list, ownerId){
         mac_list.forEach(mac_id => {
             Device.findById(mac_id, function(err, device) {
                 if (err){console.log(err);return;} 
-                device.projectId = projectId;
+                device.ownerId = ownerId;
                 device.save();
-                //console.log('Create device:' , device);
             });  
         });
     }
-
-    // function login(number, company, mac_list){
-    //     User.login({
-    //         username: number, 
-    //         password: number
-    //     }, 'user', function(err, user) {
-    //         if (err) console.log(err);
-
-    //         Device.insert({
-    //             mac_id: mac_id,
-    //             ownerId: user.id,
-    //             system_time: new Date()
-    
-    //         }, function(err, project) {
-    //             if (err) console.log(err);
-    //             console.log('Create project:', project);
-    //         });
-    //     });
-    // }
-
 }

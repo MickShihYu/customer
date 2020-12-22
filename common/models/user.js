@@ -33,7 +33,7 @@ module.exports = async function(User) {
 
   User.afterRemote('prototype.verify', function(context, user, next) {
     context.res.render('response', {
-      title: 'A Link to reverify your identity has been sent to your email successfully',
+      title: 'A Link to reverify your ide ntity has been sent to your email successfully',
       content: 'Please check your email and click on the verification link before logging in',
       redirectTo: '/',
       redirectToLinkText: 'Log in'

@@ -1,31 +1,22 @@
 {
   "name": "user",
-  "plural": "users",
   "base": "User",
   "properties": {},
   "validations": [],
   "relations": {
-    "accessTokens": {
+    "device": {
       "type": "hasMany",
-      "model": "accessToken",
-      "foreignKey": "userId"
-    },
-    "identities": {
-      "type": "hasMany",
-      "model": "userIdentity",
-      "foreignKey": "userId"
-    },
-    "credentials": {
-      "type": "hasMany",
-      "model": "userCredential",
-      "foreignKey": "userId"
-    },
-    "project": {
-      "type": "hasMany",
-      "model": "project",
+      "model": "device",
       "foreignKey": "ownerId"
     }
   },
-  "acls": [],
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "accessType": "READ",
+      "permission": "ALLOW"
+    }
+  ],
   "methods": {}
 }

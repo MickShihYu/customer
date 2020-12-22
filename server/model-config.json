@@ -10,7 +10,7 @@
     "dataSource": "db",
     "public": false
   },
-  "accessToken": {
+  "AccessToken": {
     "dataSource": "db",
     "public": false
   },
@@ -38,20 +38,16 @@
     "dataSource": "db",
     "public": false
   },
-  "project": {
+  "device": {
     "dataSource": "customerDB",
     "public": true
   },
-  "device": {
-    "dataSource": "customerDB",
-    "public": false
-  },
   "device_cfg": {
     "dataSource": "customerDB",
-    "public": false
+    "public": true
   },
   "device_commands": {
     "dataSource": "customerDB",
-    "public": false
+    "public": true
   }
 }
