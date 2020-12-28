@@ -65,19 +65,6 @@ module.exports = function(app) {
     res.render('login.ejs')
   });
 
-  app.get('/home', function(req, res, next) {
-    passport.authenticate('jwt', {session: false}, function(err, customer){
-      if (err) { return next(err); }
-
-    })(req, res, next);
-  });
-
-  app.post('/home', function(req, res, next) {
-    passport.authenticate('jwt', {session: false}, function(err, customer){
-      if (err) { return next(err); }
-    })(req, res, next);
-  });
-
   app.post('/signin', function(req, res, next) {
     passport.authenticate('local', function(err, customer, info) {
       if (err) { return next(err); }
