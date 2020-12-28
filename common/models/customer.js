@@ -1,48 +1,73 @@
 'use strict';
 const bcrypt = require('bcrypt');
 // const jwt = require('jwt');
+const passportLocal = require('../../server/middlewares/passportLocal');
 const jwt = require('jsonwebtoken');
 
 module.exports = function(Customer) {
+    // customer username should be uniqe
+    Customer.validatesUniquenessOf('username');
 
-    Customer.createUser = function(username, email, password, cb) {
-        Customer.findOne({name:username}, (err, user)=>{
-            if(err) return cb(err);
-            if(user) return cb(new Error('user is exit'));
+    const whiteList = [
+        'create',
+        'find',
+        'findOne',
+        'login'
+    ];
 
-            Customer.create({
-                username: username,
-                password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null),
-                email: email
-            }, (err, user)=>{
-                if(err) return cb(err);                
-                
-                user.token = 'Bearer ' + jwt.sign({user: {id: user.id, email: user.email}}, 'token_test');
+    Customer.sharedClass.methods().forEach((method) => {
+        const name = method.isStatic ? method.name : `prototype.${method.name}`;
+        if (whiteList.indexOf(name) === -1) Customer.disableRemoteMethodByName(name);
+    })
 
-                return cb(null, user);
-            });
-        });
-    };
-     
-    Customer.remoteMethod('createUser',{
-            accepts: [
-                {arg: 'username', type: 'object'},
-                {arg: 'email', type: 'string'},
-                {arg: 'password', type: 'string'}
-            ],
-            returns: {arg: 'devices', type: 'object'},
-            http: {path:'/createUser', verb: 'post'}
+    Customer.observe('before save', async (context) => {
+        // every time customer get a update or insert request
+        // check for password and hash it
+        const {instance, data} = context;
+        if (instance && instance.password) {
+            // create new instance of customer
+            const salt = await bcrypt.genSalt(10);
+            const hashed = await bcrypt.hash(instance.password, salt);
+            // replace plain password with hashed one
+            instance.password = hashed;
         }
-    );
 
-    Customer.login = function(name, cb) {
-        Customer.find({where:{name:name}}, cb);
+        if (data && data.password) {
+            const salt = await bcrypt.genSalt(10);
+            const hashed = await bcrypt.hash(data.password, salt);
+            // replace plain password with hashed one
+            data.password = hashed;
+        }
+    })
+
+  
+
+
+    Customer.beforeRemote('login', passportLocal);
+
+    Customer.login = function(req, callback) {
+        const {customer} = req;
+        // generate JWT Token for client here
+        const TWO_WEEKS_IN_MILLISECONDS = 2 * 7 * 24 * 3600 * 1000;
+        const token = jwt.sign(
+            { sub: customer.id}, 
+            process.env.JWT_PRIVATE_KEY, 
+            { expiresIn: TWO_WEEKS_IN_MILLISECONDS}
+        )
+        callback(null, {
+            token
+        })
     };
      
     Customer.remoteMethod('login',{
-            accepts: [{arg: 'mac_id', type: 'String'}],
-            returns: {arg: 'devices', type: 'array'},
+            accepts: [{arg: 'req', type: 'object', http: {source: 'req'}}],
+            returns: {arg: 'response', type: 'object', root: true},
             http: {path:'/login', verb: 'post'}
         }
     );
+
+    Customer.afterRemoteError('**', ({res, error}) => {
+        res.status(error.statusCode || 400)
+        .send({message: error.message});
+    })
 };
