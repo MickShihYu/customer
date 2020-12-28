@@ -1,27 +1,117 @@
 'use strict';
 
 const querystring = require('querystring');
-const jwt_decode = require('jwt-decode');
-const jwt = require('jsonwebtoken');
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+const passportJWT = require("passport-jwt");
+const JWTStrategy   = passportJWT.Strategy;
+const ExtractJwt = passportJWT.ExtractJwt;
 
 module.exports = function(app) {
-  var User = app.models.user;
+  var Customer = app.models.customer;
 
-  app.get('/', function(req, res) {
-    res.render('login', {
-      username: "",
-      email: "",
-      password: ""
+  passport.use(new LocalStrategy(
+    function(username, password, done) {
+      Customer.findOne({username:username}, function(err, customer) {
+        if (err) { return done(err); }
+        if (!customer) 
+          return done(null, false, { message: 'user is exit.' });
+        
+        if (!bcrypt.compareSync(password, customer.password)) 
+          return done(null, false, { message: 'password is fail.' });
+        
+        return done(null, customer);
+      });
+    }
+
+  ));
+  
+  passport.use(new JWTStrategy({
+    //jwtFromRequest: ExtractJwt.fromAuthHeader(),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey   : 'token_test'
+  },
+  function (jwtPayload, cb) {
+      return Customer.findOneById(jwtPayload.id)
+          .then(customer => {
+              return cb(null, customer);
+          })
+          .catch(err => {
+              return cb(err);
+          });
+  }));
+
+  passport.serializeUser(function(customer, done) {
+    done(null, customer.id);
+  });
+  
+  passport.deserializeUser(function(name, done) {
+    Customer.findOne({name:name}, function(err, customer) {
+      done(err, customer);
+    });
+  });
+  
+  app.get('/', checkAuthenticated, (req, res) => {
+    //res.render('index.ejs', { name: req.user.name })
+    const customer = req.customer;
+    return res.render('home', {
+      username: customer.username,
+      accessToken: customer.id, 
+      redirectUrl: '/api/users/change-password?access_token=' + customer.id
     });
   });
 
+  app.get('/login', checkNotAuthenticated, (req, res) => {
+    res.render('login.ejs')
+  });
+
+  app.get('/home', function(req, res, next) {
+    passport.authenticate('jwt', {session: false}, function(err, customer){
+      if (err) { return next(err); }
+
+    })(req, res, next);
+  });
+
+  app.post('/home', function(req, res, next) {
+    passport.authenticate('jwt', {session: false}, function(err, customer){
+      if (err) { return next(err); }
+    })(req, res, next);
+  });
+
+  app.post('/signin', function(req, res, next) {
+    passport.authenticate('local', function(err, customer, info) {
+      if (err) { return next(err); }
+
+      if (!customer) {  
+        return res.render('response', {
+          title: 'Login failed. Wrong username or password',
+          content: err,
+          redirectTo: '/',
+          redirectToLinkText: 'Please login again',
+        });
+      }
+
+      res.cookie('jwt', customer.token, { httpOnly: true, secure: true });
+      
+      //return res.json({success: true, token: customer.token});
+
+      return res.render('home', {
+        username: customer.username,
+        access_token: customer.token,
+        redirectUrl: '/api/users/change-password?access_token=' + customer.token
+      });
+
+    })(req, res, next);
+  });
+
   app.post('/setup', function(req, res) {
-    User.create({ 
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password
-    }, function(err, token) {
-      if (err) {
+
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
+
+    Customer.createUser(username, email, password, function(err, customer) {
+      if (err || !customer) {
         res.render('response', {
           title: 'Create failed...',
           content: err,
@@ -31,61 +121,17 @@ module.exports = function(app) {
         return;
       }
 
-      token = token.toJSON();
+      res.cookie('jwt', customer.token, { httpOnly: true, secure: true });
       
-      res.render('home', {
-        username: req.body.username,
-        email: req.body.email,
-        accessToken: token.id,
-        redirectUrl: '/api/users/change-password?access_token=' + token.id
-      });
-    });
-  });
-
-  app.post('/login', function(req, res) {
-    User.login({
-      username: req.body.username,
-      password: req.body.password
-    }, 'user', function(err, token) {
-      if (err) {
-        if(err.details && err.code === 'LOGIN_FAILED_EMAIL_NOT_VERIFIED'){
-          res.render('reponseToTriggerEmail', {
-            title: 'Login failed',
-            content: err,
-            redirectToEmail: '/api/users/'+ err.details.userId + '/verify',
-            redirectTo: '/',
-            redirectToLinkText: 'Click here',
-            userId: err.details.userId
-          });
-        } else {
-          res.render('response', {
-            title: 'Login failed. Wrong username or password',
-            content: err,
-            redirectTo: '/',
-            redirectToLinkText: 'Please login again',
-          });
-        }
-        return;
-      }
-
-      // var payload = {
-      //   id:token.id
-      // };
-      // var tokenID = jwt.sign({ payload, exp: Math.floor(Date.now() / 1000) + (60 * 15) }, process.env.JWT_SECRET_KEY);
-
-      // res.render('home', {
-      //   username: req.body.username,
-      //   accessToken: tokenID,
-      //   token:tokenID,   
-      //   redirectUrl: '/api/users/change-password?access_token=' + tokenID
-      // });
+      //return res.json({ success: true, token: customer.token });
+      
 
       res.render('home', {
-        username: req.body.username,
-        accessToken: token.id, 
-        redirectUrl: '/api/users/change-password?access_token=' + token.id
+        username: customer.username,
+        email: customer.email,
+        accessToken: customer.token,
+        redirectUrl: '/api/users/change-password?access_token=' + customer.token
       });
-
     });
   });
 
@@ -112,25 +158,39 @@ module.exports = function(app) {
   });
 
   app.post('/request-password-reset', function(req, res, next) {
-    User.resetPassword({
-      email: req.body.email
-    }, function(err) {
-      if (err) return res.status(401).send(err);
+    // Customer.resetPassword({
+    //   email: req.body.email
+    // }, function(err) {
+    //   if (err) return res.status(401).send(err);
 
-      res.render('response', {
-        title: 'Password reset requested',
-        content: 'Check your email for further instructions',
-        redirectTo: '/',
-        redirectToLinkText: 'Log in'
-      });
-    });
+    //   res.render('response', {
+    //     title: 'Password reset requested',
+    //     content: 'Check your email for further instructions',
+    //     redirectTo: '/',
+    //     redirectToLinkText: 'Log in'
+    //   });
+    // });
   });
 
   app.get('/reset-password', function(req, res, next) {
     if (!req.accessToken) return res.sendStatus(401);
-    res.render('password-reset', {
-      redirectUrl: '/api/users/reset-password?access_token='+
-        req.accessToken.id
-    });
+    // res.render('password-reset', {
+    //   redirectUrl: '/api/users/reset-password?access_token='+
+    //     req.accessToken.id
+    // });
   });
+
+  function checkAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+      return next()
+    }
+    res.redirect('/login')
+  }
+  
+  function checkNotAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+      return res.redirect('/')
+    }
+    next()
+  }
 };

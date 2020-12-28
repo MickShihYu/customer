@@ -7,8 +7,7 @@
     ]
   },
   "User": {
-    "dataSource": "db",
-    "public": false
+    "dataSource": "db"
   },
   "AccessToken": {
     "dataSource": "db",
@@ -26,18 +25,6 @@
     "dataSource": "db",
     "public": false
   },
-  "user": {
-    "dataSource": "db",
-    "public": true
-  },
-  "userCredential": {
-    "dataSource": "db",
-    "public": false
-  },
-  "userIdentity": {
-    "dataSource": "db",
-    "public": false
-  },
   "device": {
     "dataSource": "customerDB",
     "public": true
@@ -48,6 +35,10 @@
   },
   "device_commands": {
     "dataSource": "customerDB",
+    "public": true
+  },
+  "customer": {
+    "dataSource": "db",
     "public": true
   }
 }

@@ -1,14 +1,14 @@
 <section>
-  <form action="/login" method="post">
+  <form action="/signin" method="post">
     <fieldset>
       <legend>Login form</legend>
       <div>
         <label for="username">username:</label>
-        <input type="text" name="username" value="<%= username %>"/>
+        <input type="text" name="username" value=""/>
       </div>
       <div>
         <label for="password">Password:</label>
-        <input type="password" name="password" value="<%= password %>"/>
+        <input type="password" name="password" value=""/>
       </div>
       <div>
         <input type="submit" value="Login"/>
@@ -23,15 +23,15 @@
       <legend>Sign up form</legend>
       <div>
         <label for="username">username:</label>
-        <input type="text" name="username" value="<%= username %>"/>
+        <input type="text" name="username" value=""/>
       </div>
       <div>
         <label for="email">Email:</label>
-        <input type="text" name="email" value="<%= email %>"/>
+        <input type="text" name="email" value=""/>
       </div>
       <div>
         <label for="password">Password:</label>
-        <input type="password" name="password" value="<%= password %>"/>
+        <input type="password" name="password" value=""/>
       </div>
       <div>
         <input type="submit" value="Sign up"/>
@@ -46,7 +46,7 @@
       <legend>Reset password form</legend>
       <div>
         <label for="email">Email:</label>
-        <input type="text" name="email" value="<%= email %>"/>
+        <input type="text" name="email" value=""/>
       </div>
       <div>
         <input type="submit" value="Reset password"/>

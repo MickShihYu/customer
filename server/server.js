@@ -1,31 +1,19 @@
 
 require('dotenv').config({});
+
 'use strict';
 const loopback = require('loopback');
-const boot = require('loopback-boot');
 const app = module.exports = loopback();
+const boot = require('loopback-boot');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const loopbackPassport = require('loopback-component-passport');
-const PassportConfigurator = loopbackPassport.PassportConfigurator;
-const passportConfigurator = new PassportConfigurator(app);
 const bodyParser = require('body-parser');
 const flash      = require('express-flash');
-
-let config = {};
-
-try {
-  config = require('../providers.json');
-} catch (err) {
-  console.trace(err);
-  process.exit(1);
-}
-
+const passport = require('passport');
 const path = require('path');
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-boot(app, __dirname);
 
 app.middleware('parse', bodyParser.json());
 app.middleware('parse', bodyParser.urlencoded({
@@ -39,18 +27,8 @@ app.middleware('auth', loopback.token({
 app.use(session({ secret: 'secret', resave: true, saveUninitialized: true }) );
 app.use(flash());
 
-passportConfigurator.init();
-passportConfigurator.setupModels({
-  userModel: app.models.user,
-  userIdentityModel: app.models.userIdentity,
-  userCredentialModel: app.models.userCredential,
-});
-
-for (var s in config) {
-  var c = config[s];
-  c.session = c.session !== false;
-  passportConfigurator.configureProvider(s, c);
-}
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.start = function() {
   return app.listen(function() {
@@ -64,7 +42,8 @@ app.start = function() {
   });
 };
 
-if (require.main === module) {
-  app.start();
-
-}
+boot(app, __dirname, function(err) {
+  if (err) throw err;
+  if (require.main === module)
+    app.start();
+});

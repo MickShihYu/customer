@@ -20,11 +20,6 @@
   },
   "validations": [],
   "relations": {
-    "user": {
-      "type": "belongsTo",
-      "model": "user",
-      "foreignKey": "ownerId"
-    },
     "device_cfg": {
       "type": "hasOne",
       "model": "device_cfg",
