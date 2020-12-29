@@ -23,6 +23,9 @@ module.exports = ({req, res}, model, next) => {
         });
       return;
     }
+    
+    req.customer = customer;
+
     next();
   })(req, res, next);
 }

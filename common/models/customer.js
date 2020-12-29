@@ -1,6 +1,5 @@
 'use strict';
 const bcrypt = require('bcrypt');
-// const jwt = require('jwt');
 const passportLocal = require('../../server/middlewares/passportLocal');
 const jwt = require('jsonwebtoken');
 
@@ -40,9 +39,6 @@ module.exports = function(Customer) {
         }
     })
 
-  
-
-
     Customer.beforeRemote('login', passportLocal);
 
     Customer.login = function(req, callback) {
@@ -50,9 +46,9 @@ module.exports = function(Customer) {
         // generate JWT Token for client here
         const TWO_WEEKS_IN_MILLISECONDS = 2 * 7 * 24 * 3600 * 1000;
         const token = jwt.sign(
-            { sub: customer.id}, 
+            { sub: customer.id }, 
             process.env.JWT_PRIVATE_KEY, 
-            { expiresIn: TWO_WEEKS_IN_MILLISECONDS}
+            { expiresIn: TWO_WEEKS_IN_MILLISECONDS }
         )
         callback(null, {
             token

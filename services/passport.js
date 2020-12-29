@@ -3,21 +3,22 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const createError = require('http-errors');
 const Joi = require('joi');
-const {Strategy: LocalStrategy} = require('passport-local')
+const {Strategy: LocalStrategy} = require('passport-local');
 
 function validateLoginForm(form) {
-  const schema = {
+  const schema =Joi.object({
     username: Joi.string()
       .max(255)
       .required(),
     password: Joi.string()
       .max(255)
       .required()
-  }
+  })
 
-  return Joi.valid(form, schema);
-
+  return schema.validate(form);
+  //return Joi.valid(form, schema);
 }
+
 // Create local strategy for /api/Customers/login
 passport.use(new LocalStrategy({
   usernameField: 'username',
@@ -27,11 +28,12 @@ passport.use(new LocalStrategy({
   // using joi libary
   // npm install joi
   try {
+    
     const {error} = validateLoginForm({username, password})
     if (error) throw error;
 
     // Search user by username
-    const Customer = loopback.getModel('Customer');
+    const Customer = loopback.getModel('customer');
     const customer = await Customer.findOne({
       where: { username }
     });
