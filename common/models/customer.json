@@ -5,7 +5,16 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "properties": {
+    "username": {
+      "type": "string",
+      "required": true
+    },
+    "passord": {
+      "type": "string",
+      "required": true
+    }
+  },
   "validations": [],
   "relations": {},
   "acls": [],

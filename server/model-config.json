@@ -38,7 +38,7 @@
     "public": true
   },
   "customer": {
-    "dataSource": "db",
+    "dataSource": "customerDB",
     "public": true
   }
 }
