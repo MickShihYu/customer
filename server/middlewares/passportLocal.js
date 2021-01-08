@@ -14,8 +14,9 @@ module.exports = ({req, res}, model, next) => {
   {
     session: false,
     userProperty: 'customer' // default value is "user"
+
   }, (err, customer) => {
-    if (err) {
+    if (err || !customer) {
       res
         .status(400)
         .send({

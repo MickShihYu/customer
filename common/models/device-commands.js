@@ -19,9 +19,6 @@ module.exports = function(Devicecommands) {
         const endTime = new Date(end_time);
 
         if(startTime && endTime){
-
-            console.log("start:" + startTime + " end:" + endTime);
-
             const payload = {
                 where: {
                     mac_id: mac_id,

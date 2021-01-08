@@ -1,4 +1,3 @@
-
 require('dotenv').config({});
 
 'use strict';
@@ -21,15 +20,7 @@ app.middleware('parse', bodyParser.urlencoded({
   extended: true,
 }));
 
-// app.middleware('auth', loopback.token({
-//   model: app.models.accessToken,
-// }));
-
-// app.use(session({ secret: 'secret', resave: true, saveUninitialized: true }) );
 app.use(flash());
-
-// app.use(passport.initialize());
-// app.use(passport.session());
 
 app.start = function() {
   return app.listen(function() {

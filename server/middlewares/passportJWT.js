@@ -10,8 +10,8 @@ module.exports = (req, res, next) => {
   const whiteList = [
     '/explorer',
     '/customers/login',
-    '/customers'
   ];
+
   // Request to /Customers/login => apiWhiteListed = true
   // Request to /Devices => apiWhiteListed = false
   const apiWhiteListed = whiteList.some(api => req.path.match(api));
@@ -21,13 +21,14 @@ module.exports = (req, res, next) => {
     return;
   }
 
+
   // Request to /Devices have to pass the passport jwt authentication
   // otherwise, all the requests must be authenticated
   // - we defined the logic of Passport JWT in services/passport
   // - In this middleware, we only need to tell passport 
   //   to authenticate requests using passport jwt
   passport.authenticate('jwt', // correct!
-    {session: false}
+    { session: false }
   )(req, res, next);
-  
+
 }
