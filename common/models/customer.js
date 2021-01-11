@@ -53,7 +53,7 @@ module.exports = function (Customer) {
                 { expiresIn: TWO_WEEKS_IN_MILLISECONDS }
             );
             callback(null, {
-                token
+                access_token
             });
         }
         else {
@@ -65,8 +65,7 @@ module.exports = function (Customer) {
         accepts: [{ arg: 'req', type: 'object', http: { source: 'req' } }],
         returns: { arg: 'response', type: 'object', root: true },
         http: { path: '/login', verb: 'post' }
-    }
-    );
+    })
 
     Customer.afterRemoteError('**', ({ res, error }) => {
         res.status(error.statusCode || 400)

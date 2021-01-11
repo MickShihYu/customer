@@ -2,8 +2,8 @@ const loopback = require('loopback');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const createError = require('http-errors');
-const Joi = require('joi');
-const {Strategy: LocalStrategy} = require('passport-local');
+const Joi = require("@hapi/joi");
+const { Strategy: LocalStrategy } = require('passport-local');
 
 // Require Passport JWT
 const {
@@ -13,26 +13,15 @@ const {
 
 
 function validateLoginForm(form) {
-
-  // const schema ={
-  //   username: Joi.string()
-  //     .max(255)
-  //     .required(),
-  //   password: Joi.string()
-  //     .max(255)
-  //     .required()
-  // }
-  // return Joi.validate(form, schema);
-
-  const schema =Joi.object({
+  const schema = {
     username: Joi.string()
       .max(255)
       .required(),
     password: Joi.string()
       .max(255)
       .required()
-  })
-  return schema.validate(form);
+  }
+  return Joi.validate(form, schema);
 }
 
 // Create local strategy for /api/Customers/login
@@ -44,7 +33,8 @@ passport.use(new LocalStrategy({
   // using joi libary
   // npm install joi
   try {
-    const {error} = validateLoginForm({username, password})
+    const { error } = validateLoginForm({ username, password });
+
     console.log(JSON.stringify(error));
     if (error) throw error;
 
@@ -70,12 +60,18 @@ passport.use(new LocalStrategy({
   }
 }));
 
+
 // Define your passport JWT logic here
 passport.use(
   new JWTStrategy(
-    { // Strategy options
-      jwtFromRequest: ExtractJwt.fromHeader('token'), // You extract JWT from request headers
-      secretOrKey: process.env.JWT_PRIVATE_KEY,
+    {
+      // Strategy options
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromBodyField('access_token'),
+        ExtractJwt.fromUrlQueryParameter('access_token'),
+        ExtractJwt.fromHeader('access_token')
+      ]),
+      secretOrKey: process.env.JWT_PRIVATE_KEY
     },
     async (payload, done) => {
       // YOUR CODE HERE
@@ -88,11 +84,11 @@ passport.use(
         // - Look at the payload when you sign the JWT
         // jwt.sign(payload, private_key, options)
         // - You can use Customer.findById(id) instead
-        const customer = await Customer.findById(payload.sub); 
-  
+        const customer = await Customer.findById(payload.sub);
+
         // done unthorized request
-        if(!customer) throw createError(401, 'Unauthorized Request.');
-        
+        if (!customer) throw createError(401, 'Unauthorized Request.');
+
         done(null, customer);
       } catch (error) {
         done(error)
@@ -100,3 +96,4 @@ passport.use(
     }
   )
 )
+
