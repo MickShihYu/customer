@@ -13,7 +13,6 @@ module.exports = function(Devicecommands) {
         }
     );
 
-
     Devicecommands.getDeviceCommandsByTime = function(mac_id, start_time, end_time, cb){    
         const startTime = new Date(start_time);
         const endTime = new Date(end_time);

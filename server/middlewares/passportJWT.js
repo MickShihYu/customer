@@ -21,7 +21,6 @@ module.exports = (req, res, next) => {
     return;
   }
 
-
   // Request to /Devices have to pass the passport jwt authentication
   // otherwise, all the requests must be authenticated
   // - we defined the logic of Passport JWT in services/passport

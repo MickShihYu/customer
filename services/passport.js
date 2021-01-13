@@ -11,7 +11,6 @@ const {
   Strategy: JWTStrategy
 } = require('passport-jwt');
 
-
 function validateLoginForm(form) {
   const schema = {
     username: Joi.string()
@@ -60,7 +59,6 @@ passport.use(new LocalStrategy({
   }
 }));
 
-
 // Define your passport JWT logic here
 passport.use(
   new JWTStrategy(
@@ -95,5 +93,5 @@ passport.use(
       }
     }
   )
-)
+);
 

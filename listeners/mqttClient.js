@@ -1,8 +1,7 @@
-require('dotenv').config({});
 const mqtt = require('mqtt');
 
 class MqttClient {
-    constructor(deviceId, topic , callback) {
+    constructor(deviceId, topic, callback) {
         this.deviceId = deviceId;
         this.topic = topic;
 
@@ -11,13 +10,13 @@ class MqttClient {
             username: process.env.MQTT_OPTIONS_USERNAME,
             password: process.env.MQTT_OPTIONS_PASSWORD
         });
-  
+
         this.mqttClient.on('connect', () => {
             this.topic.forEach(element => {
                 this.mqttClient.subscribe(element);
                 console.log('Connected to broker: ' + element);
             });
-            
+
         });
 
         this.mqttClient.on('error', (error) => {
