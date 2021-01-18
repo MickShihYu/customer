@@ -2,6 +2,35 @@
 
 module.exports = function(Devicecommands) {
 
+
+    Devicecommands.observe('access', function (ctx, next) {
+        next();
+    });
+
+    Devicecommands.observe('loaded', function (ctx, next) {
+        next();
+    });
+
+
+    Devicecommands.observe('persist', function (ctx, next) {
+        next();
+    });
+    
+    Devicecommands.observe('*', function(ctx, next) {
+        console.log(ctx.methodString, 'was invoked remotely');     
+        next();
+    });
+
+    Devicecommands.beforeRemote('*', function (ctx, user, next) {
+        console.log(ctx.methodString, 'was invoked remotely'); 
+        next();
+    });
+
+    Devicecommands.afterRemote('*', function(ctx, remoteMethodOutput, next) {
+        console.log(ctx.methodString, 'was invoked remotely'); 
+        next();
+    });
+
     Devicecommands.listDeviceCommands = function(mac_id, cb) {
         Devicecommands.find({where:{mac_id: mac_id}}, cb);
     };

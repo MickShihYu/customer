@@ -62,13 +62,14 @@ const mqttCallBack = function (topic, message) {
 const connectCallBack = function (topic, message) {
     try {
 
-        //console.log("topic: " + topic);
-
         const topics = topic.split("/");
         const status = topics[5];
 
         message = JSON.parse(message);
         const mac = message.clientid;
+
+        console.log("topic: " + topic);
+        console.log(message);
 
         if (isMac(mac)) {
             MongoDB.getDataByKey(DEVICE_NAME, "", mac, (error, data) => {
