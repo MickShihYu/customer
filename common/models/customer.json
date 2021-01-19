@@ -10,13 +10,19 @@
       "type": "string",
       "required": true
     },
-    "passord": {
+    "password": {
       "type": "string",
       "required": true
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "device": {
+      "type": "hasMany",
+      "model": "device_commands",
+      "foreignKey": "id"
+    }
+  },
   "acls": [],
   "methods": {}
 }

@@ -9,12 +9,14 @@ module.exports = (req, res, next) => {
   // /explorer API explorer
   const whiteList = [
     '/explorer',
-    '/customers/login',
+    '/customers/login'
   ];
 
   // Request to /Customers/login => apiWhiteListed = true
   // Request to /Devices => apiWhiteListed = false
-  const apiWhiteListed = whiteList.some(api => req.path.match(api));
+  let apiWhiteListed = whiteList.some(api => req.path.match(api));
+  apiWhiteListed = (req.method == 'POST' && req.path == '/api/customers' ? true : apiWhiteListed);
+
   // if req.path matched the whiteList APIs then we don't apply passport JWT
   if (apiWhiteListed) {
     next();

@@ -7,7 +7,8 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "db",
+    "public": false
   },
   "AccessToken": {
     "dataSource": "db",
@@ -31,11 +32,11 @@
   },
   "device_cfg": {
     "dataSource": "customerDB",
-    "public": true
+    "public": false
   },
   "device_commands": {
     "dataSource": "customerDB",
-    "public": true
+    "public": false
   },
   "customer": {
     "dataSource": "customerDB",

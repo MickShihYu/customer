@@ -36,8 +36,8 @@ module.exports = function(Devicecommands) {
     };
      
     Devicecommands.remoteMethod('listDeviceCommands',{
-            accepts: [{arg: 'mac_id', type: 'String'}],
-            returns: {arg: 'devices', type: 'array'},
+            accepts: [{arg: 'mac_id', type: 'string'}],
+            returns: {arg: 'commands', type: 'array'},
             http: {path:'/listDeviceCommands', verb: 'get'}
         }
     );
@@ -64,11 +64,11 @@ module.exports = function(Devicecommands) {
     
     Devicecommands.remoteMethod('getDeviceCommandsByTime',{
             accepts: [
-                {arg: 'mac_id', type: 'String'},
-                {arg: 'start_time', type: 'String'},
-                {arg: 'end_time', type: 'String'}
+                {arg: 'mac_id', type: 'string'},
+                {arg: 'start_time', type: 'string'},
+                {arg: 'end_time', type: 'string'}
             ],
-            returns: {arg: 'data', type: 'String'},
+            returns: {arg: 'data', type: 'string'},
             http: {path:'/getDeviceCommandsByTime', verb: 'post'}
         }
     );

@@ -18,7 +18,37 @@ module.exports = function (Customer) {
     Customer.sharedClass.methods().forEach((method) => {
         const name = method.isStatic ? method.name : `prototype.${method.name}`;
         if (whiteList.indexOf(name) === -1) Customer.disableRemoteMethodByName(name);
-    })
+    });
+
+    Customer.observe('access', function (ctx, next) {
+        next();
+    });
+
+    Customer.observe('loaded', function (ctx, next) {
+        const { instance, data } = ctx;
+        next();
+    });
+
+    Customer.observe('persist', function (ctx, next) {
+        next();
+    });
+
+    Customer.observe('*', function (ctx, next) {
+        console.log(ctx.methodString, 'was invoked remotely');
+        next();
+    });
+
+
+    Customer.beforeRemote('*', function (ctx, user, next) {
+        console.log(ctx.methodString, 'was invoked remotely');
+        next();
+    });
+
+
+    Customer.afterRemote('*', function (ctx, remoteMethodOutput, next) {
+        console.log(ctx.methodString, 'was invoked remotely');
+        next();
+    });
 
     Customer.observe('before save', async (context) => {
         // every time customer get a update or insert request
@@ -38,7 +68,7 @@ module.exports = function (Customer) {
             // replace plain password with hashed one
             data.password = hashed;
         }
-    })
+    });
 
     Customer.beforeRemote('login', passportLocal);
 
@@ -62,13 +92,13 @@ module.exports = function (Customer) {
     };
 
     Customer.remoteMethod('login', {
-        accepts: [{ arg: 'req', type: 'object', http: { source: 'req' } }],
+        accepts: [{ arg: 'req', type: 'object', http: { source: 'req'} }],
         returns: { arg: 'response', type: 'object', root: true },
         http: { path: '/login', verb: 'post' }
-    })
+    });
 
     Customer.afterRemoteError('**', ({ res, error }) => {
         res.status(error.statusCode || 400)
             .send({ message: error.message });
-    })
+    });
 };

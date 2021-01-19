@@ -9,10 +9,8 @@ module.exports = function (Devicecfg) {
 
     Devicecfg.observe('loaded', function (ctx, next) {
         const { instance, data } = ctx;
-        data.test = 'hello word';
         next();
     });
-
 
     Devicecfg.observe('persist', function (ctx, next) {
         next();
@@ -41,7 +39,7 @@ module.exports = function (Devicecfg) {
     };
 
     Devicecfg.remoteMethod('listDevices', {
-        accepts: [{ arg: 'id', type: 'String' }],
+        accepts: [{ arg: 'id', type: 'string' }],
         returns: { arg: 'devices', type: 'array' },
         http: { path: '/list-devices', verb: 'get' }
     });

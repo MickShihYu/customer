@@ -34,7 +34,6 @@ passport.use(new LocalStrategy({
   try {
     const { error } = validateLoginForm({ username, password });
 
-    console.log(JSON.stringify(error));
     if (error) throw error;
 
     // Search user by username
@@ -42,7 +41,8 @@ passport.use(new LocalStrategy({
     const customer = await Customer.findOne({
       where: { username }
     });
-    console.log(JSON.stringify(customer, null, 2));
+
+    //console.log(JSON.stringify(customer, null, 2));
 
     // if customer is NOT found
     // npm install http-errors
@@ -54,6 +54,7 @@ passport.use(new LocalStrategy({
 
     // username and password is correct
     done(null, customer);
+    
   } catch (error) {
     done(error);
   }
