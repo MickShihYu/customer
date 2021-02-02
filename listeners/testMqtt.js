@@ -40,7 +40,7 @@ function deviceCFGCalBack(topic, message) {
 
 function deviceCMDCalBack(topic, message) {
     try {
-        const { from, mac_id, cmd, suid } = parseTopic(topic);
+        const { from, mac_id, cmd } = parseTopic(topic);
         const payload = {};
         payload.mac_id = mac_id;
         payload.from = from;

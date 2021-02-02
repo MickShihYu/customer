@@ -77,6 +77,7 @@ module.exports = function (Customer) {
         if (customer) {
             // generate JWT Token for client here
             const TWO_WEEKS_IN_MILLISECONDS = 2 * 7 * 24 * 3600 * 1000;
+            //const TWO_WEEKS_IN_MILLISECONDS = 2 * 60 * 1000;
             const access_token = jwt.sign(
                 { sub: customer.id }, // This is the payload
                 process.env.JWT_PRIVATE_KEY,
